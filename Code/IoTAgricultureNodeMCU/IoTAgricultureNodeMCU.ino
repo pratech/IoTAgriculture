@@ -4,7 +4,7 @@
 
 #define SoilMoisturePin A0  // used for Arduino and ESP8266
 #define RelayPin 4  // Relay Pin
-#define DHTPIN 2
+#define DHTPIN 5
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClient client;
@@ -17,8 +17,8 @@ float temperature = 0.0;
 float soilMoisture = 0.0;
 bool pumpStatus=false;//False==OFF,True==ON
 
-const char *ssid = "Humphrey"; // replace with your wifi ssid and wpa2 key
-const char *pass = "bluelight";
+const char *ssid = "TDREnterprises"; // replace with your wifi ssid and wpa2 key
+const char *pass = "TDR@1234";
 const char* iotServer = "api.thingspeak.com";
 
 void setup() 
@@ -62,21 +62,29 @@ void loop()
   Serial.print("SoilMoisture:");
   Serial.println(soilMoisture);
   
-  if(soilMoisture<800)
+  if(waterPumpManager())
   {
-    digitalWrite(RelayPin, LOW); 
+    digitalWrite(RelayPin, HIGH); 
     pumpStatus=false;
   }
   else
   {
-   digitalWrite(RelayPin, HIGH); 
+   digitalWrite(RelayPin, LOW); 
    pumpStatus=true;
   }
-  sendToIotServer();
+  sendDataToIotServer();
   delay(30000);
 } 
+bool waterPumpManager()
+{
+  //write logic / function here to turn On the Pump based on Temperature, Humidity and SoilMoisture
+  if(soilMoisture>700)
+    return true;
+  else
+    return false;
 
-void sendToIotServer()
+}
+void sendDataToIotServer()
 {
   if (client.connect(iotServer,80)>0) // “184.106.153.149” or api.thingspeak.com
   {
