@@ -65,21 +65,28 @@ void loop()
   if(waterPumpManager())
   {
     digitalWrite(RelayPin, HIGH); 
-    pumpStatus=false;
+    
+    pumpStatus=true;
+    delay(1000);
+    digitalWrite(RelayPin, LOW); 
+    
   }
   else
   {
    digitalWrite(RelayPin, LOW); 
-   pumpStatus=true;
+   pumpStatus=false;
   }
   sendDataToIotServer();
-  delay(30000);
+  delay(3000);
 } 
 bool waterPumpManager()
 {
   //write logic / function here to turn On the Pump based on Temperature, Humidity and SoilMoisture
-  if(soilMoisture>700)
+  if(soilMoisture>600)
+  {
+    
     return true;
+  }
   else
     return false;
 
